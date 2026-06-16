@@ -128,7 +128,7 @@ def load_rewards(url: str, auth: str):
 			all_results.append(current_data)
 
 		content = json.dumps(all_results)
-		print_with_timestamp(content)
+		# print_with_timestamp(content)
 
 		try:
 			requests.post(f'{url}/v1/sr-rewards', data=content, headers={'Authorization': f'Basic {auth}'})
