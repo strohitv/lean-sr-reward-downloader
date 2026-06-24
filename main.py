@@ -34,7 +34,7 @@ def load_rewards(url: str, auth: str):
 
 	try:
 		print_with_timestamp('opening firefox')
-		firefox.get("https://leanny.github.io/splat3seedchecker/index.html#/seedlisting")
+		firefox.get('https://leanny.github.io/splat3seedchecker/index.html#/seedlisting')
 
 		check_rewards_tab: WebElement | None = None
 
@@ -92,7 +92,7 @@ def load_rewards(url: str, auth: str):
 
 			selected_option = select.all_selected_options[0]
 
-			print_with_timestamp(f"Next Date: {selected_option.text}")
+			print_with_timestamp(f'Next Date: {selected_option.text}')
 			current_data = {
 				'date': selected_option.text,
 				'money': 0,
@@ -100,46 +100,56 @@ def load_rewards(url: str, auth: str):
 				'money_ticket_big': 0,
 				'silver_scales': 0,
 				'gold_scales': 0,
-				'results': '[...]'
+				'results': str([r.get_attribute('outerHTML') for r in all_result_rows])
 			}
 
 			for row_index, row in enumerate(all_result_rows):
-				print_with_timestamp(f"Row Index: #{row_index}, row text: `{row.text.split('\n')}`")
+				print_with_timestamp(f'Row Index: #{row_index}, row text: `{row.text.split('\n')}`')
 
 				if '(+ 50%)' in row.text:
-					print_with_timestamp(f"Found +50% money ticket in row #{row_index}")
+					print_with_timestamp(f'Found +50% money ticket in row #{row_index}')
 					current_data['money_ticket_small'] += 1
 				elif '(+ 100%)' in row.text:
-					print_with_timestamp(f"Found +100% money ticket in row #{row_index}")
+					print_with_timestamp(f'Found +100% money ticket in row #{row_index}')
 					current_data['money_ticket_big'] += 1
 				elif '5000' in row.text:
-					print_with_timestamp(f"Found 5000 money in row #{row_index}")
+					print_with_timestamp(f'Found 5000 money in row #{row_index}')
 					current_data['money'] += 5000
 				elif '16000' in row.text:
-					print_with_timestamp(f"Found 16000 money in row #{row_index}")
+					print_with_timestamp(f'Found 16000 money in row #{row_index}')
 					current_data['money'] += 16000
 				elif '32000' in row.text:
-					print_with_timestamp(f"Found 32000 money in row #{row_index}")
+					print_with_timestamp(f'Found 32000 money in row #{row_index}')
 					current_data['money'] += 32000
 				elif (row_index == 4 or row_index == 16) and ('3 x' in row.text or '6 x' in row.text):
 					# silver scales
 					if '3' in row.text.split('\n')[1]:
-						print_with_timestamp(f"Found 3 silver scales in row #{row_index}")
+						print_with_timestamp(f'Found 3 silver scales in row #{row_index}')
 						current_data['silver_scales'] += 3
 					else:
-						print_with_timestamp(f"Found 6 silver scales in row #{row_index}")
+						print_with_timestamp(f'Found 6 silver scales in row #{row_index}')
 						current_data['silver_scales'] += 6
 				elif (row_index == 10 or row_index == 22) and ('1 x' in row.text or '2 x' in row.text):
 					# gold scales
 					if '1' in row.text.split('\n')[1]:
-						print_with_timestamp(f"Found 1 gold scale in row #{row_index}")
+						print_with_timestamp(f'Found 1 gold scale in row #{row_index}')
 						current_data['gold_scales'] += 1
 					else:
-						print_with_timestamp(f"Found 2 gold scales in row #{row_index}")
+						print_with_timestamp(f'Found 2 gold scales in row #{row_index}')
 						current_data['gold_scales'] += 2
 
-			print_with_timestamp(f"Final result object for date {selected_option.text} (results not added yet): \n{json.dumps(current_data, indent=4)}\n")
-			current_data['results'] = str([r.get_attribute("outerHTML") for r in all_result_rows])
+			current_data_short = {
+				'date': current_data['date'],
+				'money': current_data['money'],
+				'money_ticket_small': current_data['money_ticket_small'],
+				'money_ticket_big': current_data['money_ticket_big'],
+				'silver_scales': current_data['silver_scales'],
+				'gold_scales': current_data['gold_scales'],
+				'results': f'Length of results str: {len(current_data['results'])}'
+			}
+
+			print_with_timestamp(f'Final result object for date {selected_option.text} (results not added yet): \n{json.dumps(current_data_short, indent=4)}\n')
+			# print_with_timestamp(current_data)
 			all_results.append(current_data)
 
 		content = json.dumps(all_results)
@@ -175,7 +185,7 @@ def open_firefox():
 
 	try:
 		print_with_timestamp('opening firefox')
-		firefox.get("https://leanny.github.io/splat3seedchecker/index.html#/seedlisting")
+		firefox.get('https://leanny.github.io/splat3seedchecker/index.html#/seedlisting')
 
 		while browser_is_open(firefox):
 			sleep(1)
