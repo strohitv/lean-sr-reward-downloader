@@ -138,7 +138,7 @@ def load_rewards(url: str, auth: str):
 						print_with_timestamp(f"Found 2 gold scales in row #{row_index}")
 						current_data['gold_scales'] += 2
 
-			print_with_timestamp(f"Final result object for date {option} (results not added yet): `{current_data}`\n")
+			print_with_timestamp(f"Final result object for date {selected_option.text} (results not added yet): \n{json.dumps(current_data, indent=4)}\n")
 			current_data['results'] = str([r.get_attribute("outerHTML") for r in all_result_rows])
 			all_results.append(current_data)
 
