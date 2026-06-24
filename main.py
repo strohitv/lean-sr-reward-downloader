@@ -104,6 +104,8 @@ def load_rewards(url: str, auth: str):
 			}
 
 			for row_index, row in enumerate(all_result_rows):
+				print_with_timestamp(f"Row Index: #{row_index}, row text: `{row.text.split('\n')}`")
+
 				if '(+ 50%)' in row.text:
 					print_with_timestamp(f"Found +50% money ticket in row #{row_index}")
 					current_data['money_ticket_small'] += 1
@@ -119,10 +121,8 @@ def load_rewards(url: str, auth: str):
 				elif '32000' in row.text:
 					print_with_timestamp(f"Found 32000 money in row #{row_index}")
 					current_data['money'] += 32000
-				elif (row_index == 4 or row_index == 16) and 'x' in row.text and ('3' in row.text or '6' in row.text):
+				elif (row_index == 4 or row_index == 16) and ('3 x' in row.text or '6 x' in row.text):
 					# silver scales
-					print_with_timestamp(f"Row Index: #{row_index}, row text: `{row.text}`")
-					print_with_timestamp(row.text.split('\n'))
 					if '3' in row.text.split('\n')[1]:
 						print_with_timestamp(f"Found 3 silver scales in row #{row_index}")
 						current_data['silver_scales'] += 3
@@ -131,8 +131,6 @@ def load_rewards(url: str, auth: str):
 						current_data['silver_scales'] += 6
 				elif (row_index == 10 or row_index == 22) and ('1 x' in row.text or '2 x' in row.text):
 					# gold scales
-					print_with_timestamp(f"Row Index: #{row_index}, row text: `{row.text}`")
-					print_with_timestamp(row.text.split('\n'))
 					if '1' in row.text.split('\n')[1]:
 						print_with_timestamp(f"Found 1 gold scale in row #{row_index}")
 						current_data['gold_scales'] += 1
