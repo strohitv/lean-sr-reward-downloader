@@ -78,6 +78,7 @@ def load_rewards(url: str, auth: str):
 		all_results = []
 
 		for index, option in enumerate(all_options):
+			print()
 			select.select_by_index(index)
 			sleep(1)
 
@@ -91,6 +92,7 @@ def load_rewards(url: str, auth: str):
 
 			selected_option = select.all_selected_options[0]
 
+			print_with_timestamp(f"Next Date: {selected_option.text}")
 			current_data = {
 				'date': selected_option.text,
 				'money': 0,
@@ -98,37 +100,51 @@ def load_rewards(url: str, auth: str):
 				'money_ticket_big': 0,
 				'silver_scales': 0,
 				'gold_scales': 0,
-				'results': str([r.get_attribute("outerHTML") for r in all_result_rows])
+				'results': '[...]'
 			}
 
 			for row_index, row in enumerate(all_result_rows):
 				if '(+ 50%)' in row.text:
+					print_with_timestamp(f"Found +50% money ticket in row #{row_index}")
 					current_data['money_ticket_small'] += 1
 				elif '(+ 100%)' in row.text:
+					print_with_timestamp(f"Found +100% money ticket in row #{row_index}")
 					current_data['money_ticket_big'] += 1
 				elif '5000' in row.text:
+					print_with_timestamp(f"Found 5000 money in row #{row_index}")
 					current_data['money'] += 5000
 				elif '16000' in row.text:
+					print_with_timestamp(f"Found 16000 money in row #{row_index}")
 					current_data['money'] += 16000
 				elif '32000' in row.text:
+					print_with_timestamp(f"Found 32000 money in row #{row_index}")
 					current_data['money'] += 32000
-				elif (row_index == 4 or row_index == 16) and ('3 x' in row.text or '6 x' in row.text):
+				elif (row_index == 4 or row_index == 16) and 'x' in row.text and ('3' in row.text or '6' in row.text):
 					# silver scales
-					if '3 x' in row.text:
+					print_with_timestamp(f"Row Index: #{row_index}, row text: `{row.text}`")
+					print_with_timestamp(row.text.split('\n'))
+					if '3' in row.text.split('\n')[1]:
+						print_with_timestamp(f"Found 3 silver scales in row #{row_index}")
 						current_data['silver_scales'] += 3
 					else:
+						print_with_timestamp(f"Found 6 silver scales in row #{row_index}")
 						current_data['silver_scales'] += 6
 				elif (row_index == 10 or row_index == 22) and ('1 x' in row.text or '2 x' in row.text):
 					# gold scales
-					if '1 x' in row.text:
+					print_with_timestamp(f"Row Index: #{row_index}, row text: `{row.text}`")
+					print_with_timestamp(row.text.split('\n'))
+					if '1' in row.text.split('\n')[1]:
+						print_with_timestamp(f"Found 1 gold scale in row #{row_index}")
 						current_data['gold_scales'] += 1
 					else:
+						print_with_timestamp(f"Found 2 gold scales in row #{row_index}")
 						current_data['gold_scales'] += 2
 
+			print_with_timestamp(f"Final result object for date {option} (results not added yet): `{current_data}`\n")
+			current_data['results'] = str([r.get_attribute("outerHTML") for r in all_result_rows])
 			all_results.append(current_data)
 
 		content = json.dumps(all_results)
-		# print_with_timestamp(content)
 
 		try:
 			requests.post(f'{url}/v1/sr-rewards', data=content, headers={'Authorization': f'Basic {auth}'})
@@ -140,6 +156,10 @@ def load_rewards(url: str, auth: str):
 
 	except Exception as e:
 		print_with_timestamp(e)
+		# print_with_timestamp(sys.exception().__traceback__)
+		print_with_timestamp(e.__context__)
+		print_with_timestamp(e.__cause__)
+		print_with_timestamp(e.__traceback__)
 	finally:
 		profile_path = Path(firefox.options.profile.path).parent.absolute()
 		firefox.quit()
